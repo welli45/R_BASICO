@@ -14,7 +14,38 @@ rm(list=ls(all=T))
 library(tidyverse)
 ```
 
+letras em vez de números
+
+Solução 1 - filtrar
 ```{r}
-prob <- 
+filter(problema, c != "a")
+```
+solução 2 - transformando em dado numérico
+
+```{r}
+class(problema$c)
+
+as.numeric(problema$c) %>% mean(na.rm=T)
+
+mean(problema$b,na.rm=TRUE)
+
+
+
+problema$c<- as.numeric(problema$c) 
 ```
 
+problema com NA "Not Available"/"não disponível"
+
+solução 1 - filtrar
+```{r}
+is.na(problema$b)
+problema$b
+
+filter(problema, is.na(b) == FALSE & is.na(c)==F)
+```
+definindo uma faixa de valores
+```{r}
+filter(problema,between(c,1,5) )
+
+filter(problema,between(c,1,5) & between(b,1,6))
+```
