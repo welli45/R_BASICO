@@ -1,0 +1,92 @@
+---
+title: "Transformação e Remodelagem de dados"
+author: "Wellington Santos"
+date: "09/03/2022"
+output: html_document
+---
+
+## Manipulando data frames com o R Base
+
+Limpando Ambiente Global
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+```
+
+Banco de dados
+```{r}
+## banco de dados do R base
+iris <- iris
+
+## visualizando banco de dados
+View(iris)
+
+## tipo de dados
+str(iris)
+
+## resumo de estatísticas básica dos dados
+summary(iris)
+```
+
+Acessando elementos do data frame
+```{r}
+## elemento da primeira linha segunda coluna
+iris[1,2]
+
+## primeira linha todas as colunas
+iris[1,]
+
+## terceira coluna
+iris[,3]
+
+## coluna Petal.Length
+iris$Petal.Length
+iris[,"Petal.Length"]
+```
+
+Operações matemáticas nas colunas
+```{r}
+## média Sepal.Width
+mean(iris$Sepal.Width)
+
+## soma Sepal.Width
+sum(iris$Sepal.Width)
+
+## desvio padrão
+sd(iris$Sepal.Width)
+```
+Aplicando alguns filtros
+```{r}
+## especie versicolor
+versicolor <- iris[iris$Species == "versicolor",]
+
+## Petal.Length menor que 2
+menor2 <- iris[iris$Petal.Length < 2,]
+
+## Petal.Length maior que 2 e menor que 4
+maior2menor4 <- iris[iris$Petal.Length > 2 & iris$Petal.Length < 4,]
+
+## excluindo coluna Petal.Length 
+irisSemPetal.Length <- iris[,-3]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

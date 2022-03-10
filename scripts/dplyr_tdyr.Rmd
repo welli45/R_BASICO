@@ -1,0 +1,304 @@
+---
+title: "Transformação e Remodelagem de dados"
+author: "Wellington Santos"
+date: "09/03/2022"
+output: html_document
+---
+
+## Manipulando banco de dados com o dplyr
+
+Limpando Ambiente Global
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+```
+
+Instalando e Carregando o pacote tidyverse
+```{r results='hide'}
+if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
+```
+
+Banco de dados
+```{r}
+## banco de dados do R base
+iris1 <- iris
+iris1 <- as.tibble(iris1)
+
+## visualizando banco de dados
+View(iris1)
+
+## tipo de dados
+str(iris1)
+```
+**Função select** 
+
+Selecionando colunas
+```{r}
+## nomes das variaveis
+colnames(iris1)
+```
+
+```{r}
+## selecionando a segunda variável
+select(iris1,2)
+select(iris1,"Sepal.Width")
+```
+
+```{r}
+
+## selecionado as três primeiras
+select(iris1, 1:3)
+select(iris1,"Sepal.Length","Sepal.Width","Petal.Length")
+```
+
+Outras regras de Seleção
+```{r}
+## variáveis que começam com S
+select(iris1, starts_with("S"))
+```
+
+```{r}
+## variaveis que terminam com h
+select(iris1, ends_with("h"))
+```
+
+```{r}
+## variaveis que contém Spe
+select(iris1, contains("Spe"))
+```
+
+```{r}
+## contem a expressao regular, neste caso "."
+select(iris1, matches("[:punct:]"))
+```
+
+
+Excluindo colunas
+
+```{r}
+## excluindo a coluna Sepal.Width
+select(iris1, -2)
+select(iris1, -"Sepal.Width")
+```
+
+```{r}
+## excluindo colunas de 4 a 5
+select(iris1, -(4:5))
+```
+
+Renomeando variáveis 
+
+```{r}
+## renomeando Sepal.Width para Largura.Sepala
+select(iris1, Largura.Sepala = Sepal.Width)
+
+## com a função rename
+rename(iris1, Largura.Sepala = Sepal.Width)
+```
+
+```{r}
+iris1 <- iris
+```
+
+**Função filter**
+
+Filtra linhas de acordo com condições 
+
+```{r}
+## Species que sejam iguais a setosa
+filter(iris1, Species == "setosa")
+```
+
+```{r}
+## filtrando Petal.Length menor que 2 e especie setosa
+filter(iris1, Petal.Length < 2 & Species == "setosa")
+```
+
+**Função arrange**
+
+Organiza linhas por variáveis
+
+```{r}
+## organizando Sepal.Length por ordem crescente
+arrange(iris1, Sepal.Length)
+```
+```{r}
+## organizando Sepal.Length por ordem decrescente
+arrange(iris1, desc(Sepal.Length))
+```
+**Função mutate**
+
+Cria novas variáveis
+
+```{r}
+## nova coluna com a soma Sepal.Length + Sepal.Width
+mutate(iris1, sepsum = Sepal.Length + Sepal.Width)
+```
+```{r}
+## Sepal.Width multiplicado por 2
+mutate(iris1, sepx2 = Sepal.Width*2)
+```
+Usando a função ifelse
+```{r}
+## criando a variável comprimentoSepala com algumas condições
+(iris2 <- mutate(iris1, comprimentoSepala = ifelse(Sepal.Length >= 4, "Comprido", "Curto")))
+```
+**Função group_by**
+
+Marca variáveis por grupo
+
+```{r}
+## agrupando por species
+iris4 <- group_by(iris1, Species)
+```
+
+**Função summarise**
+
+Aplica funções nos grupos
+
+```{r}
+## criando tabela com media e desvio padrão de Petal.Width por Species *usei a grpup_by para isso antes*
+summarise(iris4, Média = mean(Petal.Width), SD = sd(Petal.Width))
+```
+Criando novo banco de dados
+
+```{r}
+a <- data.frame("Altura" = c(1.60,1.82,1.90),"Peso"= c(60,92,80))
+
+a1 <- data.frame("Altura" = c(1.50,1.6,1.5,1.8,1.90),"Peso"= sample(60:92,5,replace=T))
+
+b <- data.frame("Peso"= c(92,98,100), "Gênero"=c("masc","fem","outros"))
+
+c <- data.frame("X"=1:2,"Y"=LETTERS[9:10],"Z"=200:201)
+```
+
+**Juntando data.frames**
+
+Juntando colunas
+```{r}
+## mesmo numero de linhas
+bind_cols(a,b)
+```
+Juntando Linhas
+
+```{r}
+## uma coluna em comum
+bind_rows(a,b)
+```
+```{r}
+## nenhuma coluna em comum
+bind_rows(a,c)
+```
+```{r}
+## todas as colunas em comum
+bind_rows(a, a1)
+```
+Juntando por colunas **join**
+
+```{r}
+## retorna os numeros em comum na coluna "Peso"
+inner_join(a, b, by="Peso")
+```
+
+```{r}
+## todos os valores do data frame da esquerda
+left_join(a, b, by="Peso")
+```
+
+```{r}
+## todos os valores do data frame da direita
+right_join(a, b, by="Peso")
+```
+
+```{r}
+## todos os valores
+full_join(a,b,by="Peso")
+```
+
+```{r}
+## todos os valores não combinado do primeira data.frame
+anti_join(a,b,by="Peso")
+```
+Filtrar valores 
+
+```{r}
+## combinando a e a1
+bdist <- bind_rows(a,a1)
+bdist
+```
+```{r}
+## mantém apenas a coluna selecionada
+distinct(bdist,Peso)
+```
+```{r}
+## mantém todas as colunas
+distinct(bdist,Peso, .keep_all = T)
+```
+
+## Manipulando banco de dados com o tidyr
+
+Banco de dados
+```{r}
+## banco de dados do R base
+iris1 <- iris
+iris1 <- as.tibble(iris1)
+```
+
+**%>%** *= passa um objeto que vem antes do pipe com o primeiro argumento da função que vem depois*
+
+```{r}
+## filtrando banco de dados iris1 por Species == versicolor
+versicolor <- iris1 %>% 
+  filter(Species == "versicolor")
+```
+
+```{r}
+## várias funções
+versicolor1 <- iris1 %>% 
+  filter(Species == "versicolor") %>% 
+  select(2:4) %>% 
+  mutate(cod = row_number()+100)
+```
+
+Função **gather**
+
+Junta valores de diferentes colunas e reorganiza
+
+```{r}
+(versicolor2 <- gather(versicolor1, variavel, valor, - cod))
+```
+Função **spread**
+
+Separa uma variável em colunas 
+
+```{r}
+spread(versicolor2, variavel, valor)
+```
+Função **separate**
+
+Separa conteúdo das linhas
+
+```{r}
+## separando a puntuação
+versicolor2 %>% 
+  separate(variavel, c("petala", "medida"))
+```
+```{r}
+## separando manualmente
+versicolor2 %>% 
+  separate(variavel, c("petala", "medida"), sep = "Wid")
+```
+Função **unite**
+
+OPosto de separate, une conteúdos
+
+```{r}
+## unindo as colunas linha e Petal.Length
+versicolor %>% 
+  unite("linha_width",2,3,sep = "__")
+```
+
+
+
+
+

@@ -1,0 +1,20 @@
+---
+title: "Transformação e Remodelagem de dados"
+author: "Wellington Santos"
+date: "09/03/2022"
+output: html_document
+---
+
+## Data.Frames problemáticos
+
+Limpando Ambiente Global
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+library(tidyverse)
+```
+
+```{r}
+prob <- 
+```
+
