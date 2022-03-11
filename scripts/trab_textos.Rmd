@@ -1,0 +1,119 @@
+---
+title: "Lidando com Texto"
+author: "Wellington Santos"
+date: "11/03/2022"
+output: html_document
+---
+
+
+Limpando Ambiente Global
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+```
+
+Instalando e Carregando o pacote tidyverse
+```{r results='hide'}
+if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
+```
+
+```{r}
+## dado - art 5° da constituição
+art5 <- "Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade"
+```
+
+Funções
+
+```{r}
+## divide o texto e cria uma lista
+a5 <- strsplit(art5, " ")
+```
+
+```{r}
+## muda do formato lista para vetor
+a5 <-  unlist(a5)
+
+## selecionando o 4° elemento
+a5[4]
+```
+```{r}
+## dividindo por letra
+a5_ <- art5 %>% strsplit("") %>% unlist()
+## selecionando o 9 elemento
+a5_[9]
+```
+Fazendo o oposto
+
+```{r}
+## juntando separados por espaço
+paste(a5, collapse = " ")
+```
+```{r}
+## nenhum espaço
+paste(a5, collapse = "")
+```
+```{r}
+## separados por $
+paste(a5, collapse = "$")
+```
+```{r}
+## alfabeto minísculo e maiusculo
+paste(letters, LETTERS, sep = "/")
+paste(c(letters, LETTERS), sep = "/")
+```
+
+Funções para localizar termos
+
+```{r}
+## funçaõ () - posição
+grep("a",a5)
+```
+```{r}
+grep("a",a5, value = T)
+```
+```{r}
+grep("dade",a5, value = T)
+```
+```{r}
+## logico
+grepl("a",a5)
+```
+```{r}
+## palavras específicas
+grep("igualdade", a5, value = T)
+```
+Substituindo termos
+```{r}
+## substituindo o primeiro a encontrado
+sub("a", "A", a5)
+```
+```{r}
+## substituindo todos os A
+gsub("a", "A", a5)
+```
+Usando as Funções em data.frames
+
+```{r}
+## banco de dados
+iris1 <- iris
+```
+
+```{r}
+## substituindo os nomes das observações da coluna Species
+iris1$Species <- gsub("setosa", "tipo1", iris1$Species)
+iris1$Species <- gsub("virginica", "tipo2", iris1$Species)
+iris1$Species <- gsub("versicolor", "tipo3", iris1$Species)
+```
+
+```{r}
+## substituindo todos as oservações
+iris1$Species <- gsub("tipo", "especies", iris1$Species)
+```
+
+
+
+
+
+
+
+
