@@ -1,0 +1,426 @@
+---
+title: "Gráficos"
+author: "Wellington Santos"
+date: "10/03/2022"
+output: html_document
+---
+
+## Gráficos Rápidos
+
+Limpando Ambiente Global
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+```
+
+Instalando e Carregando o pacote tidyverse
+```{r results='hide'}
+if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
+```
+
+Gráfico com uma dimenssão
+```{r}
+## histograma, por padrão
+qplot(x = Petal.Length, data = iris, bins = 30)
+```
+```{r}
+## especificando o tipo de grafico
+qplot(x = Petal.Length, data = iris, geom = "histogram", bins = 30)
+```
+```{r}
+## grafico de barras
+qplot(x = Sepal.Width, data = iris, geom = "bar")
+```
+```{r}
+## padrão geom = "bar
+qplot(x = Species, data = iris)
+```
+Gráficos com duas dimensões
+
+```{r}
+## padrão geom = point
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris)
+```
+```{r}
+## grafico de linhas
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris, geom = "line")
+```
+```{r}
+## grafico de linhas - pesquisar???
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris, geom = "path")
+```
+```{r}
+## grafico de pontos: cores por species
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris, color = Species)
+```
+```{r}
+## formato dos pontos por species
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris, shape = Species)
+```
+
+```{r}
+## cor e formato por species
+qplot(x =  Sepal.Width, y = Petal.Width, data = iris, color = Species,shape = Species)
+```
+
+## Gráficos de uma dimensão
+
+Gráfico de variáveis  com uma dimensão
+
+```{r}
+## grafico de barras
+ggplot(iris, aes(Sepal.Width)) + geom_bar()
+```
+```{r}
+## histograma
+ggplot(iris, aes(Sepal.Width)) + geom_histogram(bins = 30)
+```
+
+```{r}
+## grafico de densidade (estimativa de densidade de Kernel)
+ggplot(iris, aes(Sepal.Width)) + geom_density()
+```
+
+```{r}
+## poligno de frequencia
+ggplot(iris, aes(Sepal.Width)) + geom_freqpoly(bins = 30)
+```
+
+```{r}
+## graficos de pontos
+ggplot(iris, aes(Sepal.Width)) + geom_dotplot(binwidth = 0.05)
+```
+
+Personalização
+
+```{r}
+## objeto que recebe o banco de dados no qual usaremos para construir os graficos
+g <- ggplot(iris)
+```
+
+```{r}
+## transparencia e contornos
+## alpha = transparencia
+## colour = controno
+g+ geom_histogram(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.3, colour = "black")
+```
+```{r}
+g+ geom_density(aes(Petal.Length, fill = Species), colour = "black")
+```
+```{r}
+g+ geom_freqpoly(aes(Petal.Length, colour = Species), binwidth = 0.1)
+```
+
+Combinando Graficos
+
+```{r}
+## histograma com um grafico de densidade
+## 0.1 * ..count.. é utilizado para ele ignorar a estimativa de densidade de Kernel e usar a ontagem como altura das linhas 
+ g+ geom_histogram(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.5, colour = "black") + 
+  geom_density(aes(Petal.Length,0.1*..count.., fill = Species), alpha = 0.3, colour = "black")
+  
+```
+```{r}
+g+ geom_histogram(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.5, colour = "black") +
+  geom_freqpoly(aes(Petal.Length, colour = Species), binwidth = 0.1)
+```
+```{r}
+g+ geom_dotplot(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.5, colour = "black") +
+  geom_freqpoly(aes(Petal.Length, colour = Species), binwidth = 0.1)
+```
+
+## Graficos de duas dimensões
+
+Graficos de Barras e colunas
+```{r}
+dados <- iris %>% 
+  group_by(Species) %>% 
+  summarise(Média = mean(Sepal.Width), Desvio = sd(Sepal.Width))
+```
+
+```{r}
+## criacao do objeto para plotar
+g <- ggplot(dados)
+```
+
+```{r}
+## grafico de colunas do desvio padrão de Sepal.Width
+g+ geom_col(aes(x = Species, y = Desvio))
+```
+```{r}
+## grafico de colunas da média de Sepal.Width
+g+ geom_col(aes(x = Species, y = Média))
+```
+
+Existem 4 tipos de linhas: "dashed","longdash", "solid" e "dotted"
+
+```{r}
+## para maximo e minimo
+g + geom_linerange(aes(x=Species, ymin=Média-Desvio, ymax=Média+Desvio), linetype="dashed")
+```
+
+```{r}
+g + geom_errorbar(aes(x=Species, ymin=Média-Desvio, ymax=Média+Desvio), linetype="longdash")
+```
+```{r}
+g+ geom_errorbarh(aes(y=Species, xmin=Média-Desvio, xmax=Média+Desvio))
+```
+```{r}
+g+ geom_pointrange(aes(x=Species,y=Média,ymin=Média-Desvio,ymax=Média+Desvio,colour=Species), size=1)
+```
+Combinando gráficos
+```{r}
+g+geom_col(aes(x=Species,y=Média,fill=Species))+
+  geom_errorbar(aes(x=Species, ymin=Média-Desvio, ymax=Média+Desvio), linetype="longdash")
+```
+
+Novos formatos
+
+```{r}
+## criando novo banco de dados
+g1 <- ggplot(iris)
+```
+
+```{r}
+## grafico de pontos: comprimento por largura de sepalas
+g1+ geom_point(aes(x=Sepal.Length, y=Sepal.Width))
+```
+
+```{r}
+## grafico de pontos: comprimento por largura de sepalas, adicionado cores
+g1+ geom_point(aes(x=Sepal.Length, y=Sepal.Width, colour=Species))
+```
+```{r}
+## grafico de pontos: comprimento por largura de sepalas, adicionado cores e formato
+g1+ geom_point(aes(x=Sepal.Length, y=Sepal.Width, colour=Species,shape=Species))
+```
+Time series
+```{r}
+## banco de dados economics
+e <- ggplot(economics)
+```
+
+```{r}
+## grafico de série temporal
+e+ geom_line(aes(date,unemploy))
+```
+```{r}
+## grafico de área
+e+ geom_area(aes(date, unemploy))
+```
+## Mudando aspectos estéticos do Gráfico - 2
+
+Adicionando Legendas e cores aos gráficos
+
+```{r}
+a <- g1+ geom_point(aes(x=Sepal.Length, y=Sepal.Width, colour=Species))+
+  labs(title = "Comprimento por Largura de Sepalas",x="Valores de Sepal.Length",y="Valores de Sepal.Length")
+a
+```
+Adicionando temas
+```{r}
+a+ theme_bw()
+```
+
+```{r}
+a+theme_classic()
+```
+```{r}
+a+ theme_minimal()
+```
+Mais temas com o pacote ggthemes
+
+Instalando e Carregando o pacote ggthemes
+```{r results='hide'}
+if(!require(ggthemes)){install.packages("ggthemes");library(ggthemes)}
+```
+
+```{r}
+## cores  e temas do the economist
+a+ theme_economist() + scale_colour_economist()
+```
+```{r}
+## pessoas dautonicas
+a+ theme_calc()+scale_color_colorblind()
+```
+ZOOM
+```{r}
+a+xlim(4,5)+ylim(2,2.5)
+```
+
+## Boxplots, gráficos de violino, pizza, e outras funções
+
+Boxplot
+```{r}
+## base de dados
+e <- ggplot(mpg)
+```
+
+```{r}
+## boxplot de tipo de carro x milhas por galão
+e+ geom_boxplot(aes(class,hwy))
+```
+```{r}
+## tipo de carro X milhas por galao
+e+ geom_boxplot(aes(class,hwy))+
+  geom_jitter(aes(class,hwy))
+```
+```{r}
+## grafico de violino
+e+ geom_violin(aes(class,hwy))+
+  geom_jitter(aes(class,hwy))
+```
+Mudando as coordenas cartesianas dos gráficos
+
+```{r}
+e+ geom_violin(aes(class,hwy))+
+  geom_jitter(aes(class,hwy))+
+  coord_cartesian(xlim = c(0,10), ylim=c(-10,60))
+```
+
+COrdenadas
+
+```{r}
+## girar o grafico
+e+ geom_boxplot(aes(class,hwy)) + coord_flip()
+```
+
+**Graficos de Pizza**
+
+O gráfico de pizza no ggplot é uma variação do grafico de barrras/colunas
+
+```{r}
+## banco de dados
+df <- data.frame(grupo=c("H","M","C"),
+                 valor=c(25,25,5))
+```
+
+```{r}
+## grafico de colunas
+ggplot(df) + geom_col(aes(x=1,y=valor,fill=grupo))
+```
+```{r}
+## grafico de pizza
+ggplot(df) + geom_col(aes(x=1,y=valor,fill=grupo))+
+  coord_polar(theta = "y")
+```
+
+```{r}
+## grafico de rosca
+ggplot(df) + geom_col(aes(x=1,y=valor,fill=grupo))+
+  coord_polar(theta = "x")
+```
+**Facets**
+
+```{r}
+e+ geom_boxplot(aes(class,hwy))+
+  facet_grid(year~.)
+```
+
+```{r}
+e+ geom_boxplot(aes(class,hwy))+ facet_grid(drv~year)
+```
+
+**Gráficos de Bolhas - Bubble chart**
+
+Duas variaveis numericas (categorica ok) para os eixos x e y.
+
+Uma variavel numerica para o tamanho/cor das bolhas. opcional
+
+Uma variável categórica para o formato das bolhas. opcional
+
+```{r}
+## banco de pontos
+diamonds <- diamonds
+## deixa o tema "bW" como padrão
+theme_set(theme_bw())
+```
+
+```{r}
+## grafico de bolhas básico
+diamonds %>% 
+  sample_n(250) %>% #amostra
+  ggplot(aes(x=carat,y=price))+ #posicao dos pontos
+  geom_point(alpha=0.3) #transparencia
+```
+
+```{r}
+## grafico de pontos basico com cores
+diamonds %>% 
+  sample_n(250) %>% #amostra
+  ggplot(aes(x=carat,y=price, color=cut))+ #cor dos pontos
+  geom_point(alpha=0.3)
+```
+
+```{r}
+## grafico de bolhas
+diamonds %>% 
+  sample_n(250) %>% #amostra
+  ggplot(aes(x=carat,y=price, size=depth,color=cut))+ #cor dos pontos
+  geom_point(alpha=0.3)+
+  scale_size_continuous(range = c(0.01,10))
+```
+
+EXemplo 2
+
+```{r}
+ggplot(iris)+
+  geom_jitter(aes(x=Sepal.Length, y=Sepal.Width,
+                  colour=Species,size=Petal.Length,shape=Species),
+              alpha=0.5)+
+  scale_size_continuous(range = c(0.01,10))
+```
+
+
+**Waffle Chart**
+
+Grafico de waffle
+
+```{r}
+## banco de dados
+mpg <- mpg
+va <- mpg$class
+```
+
+```{r}
+## preparar os dados
+nrows <- 10 # numero de blocos/linhas
+df <- expand.grid(y=1:nrows,x=1:nrows)
+```
+
+```{r}
+## tabulando de maneira simples
+categ.table <- round(table(va)*((nrows*nrows)/(length(va))))
+```
+
+```{r}
+## colocando os nomes no data.frame
+df$category <- factor(rep(names(categ.table),categ.table))
+```
+Grafico
+```{r}
+## simples
+ggplot(df, aes(x=x,y=y,fill=category))+
+  geom_tile(color="black", size=0.5)
+```
+```{r}
+## com mais detalhes
+ggplot(df, aes(x=x,y=y,fill=category))+
+  geom_tile(color="black", size=0.5)+
+  scale_x_continuous(expand = c(0,0))+
+  scale_y_continuous(expand = c(0,0), trans = 'reverse')+
+  scale_fill_brewer(palette = "Set1")+
+  labs(title = "Grafico WAFFLE", subtitle = "Tipo de veículo", caption = "Fonte: mpg")+
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_blank())
+```
+
+
+
+
+
+
+
+
+
