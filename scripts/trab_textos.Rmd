@@ -110,10 +110,20 @@ iris1$Species <- gsub("versicolor", "tipo3", iris1$Species)
 iris1$Species <- gsub("tipo", "especies", iris1$Species)
 ```
 
+Trabalhando com  texto
 
+**Pacote tidyverse**
+Instalando e Carregando o pacote tidyverse
+```{r results='hide'}
+if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
+if(!require(tidytext)){install.packages("tidytext");library(tidytext)}
+if(!require(tm)){install.packages("tm");library(tm)}
+```
 
-
-
-
+Dados
+```{r}
+## carregando texto
+casmurro <- scan("casmurro.txt", what = "character", sep= "\n", encoding = "UTF-8")
+```
 
 
