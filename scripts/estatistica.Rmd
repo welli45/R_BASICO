@@ -1,0 +1,388 @@
+---
+title: "Estatistica"
+author: "Wellington Santos"
+date: "12/03/2022"
+output: html_document
+---
+
+## t-test/teste-t
+
+Usado para examinar se a diferença em médias é significativa ou não
+
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+rm(list=ls(all=T))
+```
+
+Instalando e Carregando o pacote 
+
+```{r results='hide'}
+if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
+```
+
+Banco de dados
+
+```{r}
+dente <- ToothGrowth
+head(dente)
+str(dente)
+```
+```{r}
+## histograma
+qplot(x=len,data=dente,binwidth=2)
+```
+Shapiro-wilk - teste de normalidade
+
+$H_0: distribuição = normal$
+
+$H_1: ditribuição \ne normal$
+
+$p > 0.05:$ dados normalmente distribuidos
+
+```{r}
+shapiro.test(dente$len)
+```
+```{r}
+ggplot(dente,aes(x=supp,y=len))+
+  geom_boxplot()+geom_jitter()+
+  labs(title = "Crescimento dentário de porquinho da índia",x="Tipo de Suplemento",y="Crescimento dentário")
+  
+```
+```{r}
+## media geral de len
+mean(dente$len)
+```
+
+```{r}
+## média por grupo
+group_by(dente,supp) %>% 
+  summarise(mean(len))
+```
+**Teste para uma amostra**
+
+Teste para examinar se a média de um grupo é significativamente um determinado valor.
+
+$H_0: \mu = 18$
+
+$H_0: \mu \ne 18$
+
+```{r}
+## teste t para uma amostra
+t.test(dente$len,mu=18)
+```
+*Conclusão: não rejeitamos a* $H_0$ *ao nível de significancia de 5%, ou seja, os dados confirmam a nossa* $H_0$ *de que* $H_0: \mu = 18$.
+
+Maior/menor que deeterminado valor
+
+$H_0: \mu = 3$
+
+$H_0: \mu > 3$
+
+```{r}
+t.test(dente$len, alternative = "greater", mu=3)
+```
+*Conclusão: rejeitamos a* $H_0$...
+
+**Teste T para dois grupos independentes**
+
+Testa a diferença nas médias
+
+$H_0: \mu_{vc} = \mu_{oj}$
+
+$H_0: \mu_{vc} \ne \mu_{oj}$
+
+```{r}
+## separar os grupos
+OJ <- dente$len[dente$supp == "OJ"]
+
+VC <- dente$len[dente$supp == "VC"]
+```
+
+```{r}
+## observações não pareadas, as informações foram coletadas separadamente. paired = F
+t.test(OJ,VC , paired = F, var.equal = F, conf.level = .95)
+```
+*Conclusão: não rejitamos a* $H_0$.
+
+Graficos
+
+```{r}
+g<- dente %>% group_by(supp) %>% summarise(media = mean(len), desvio= sd(len))
+
+ggplot(g)+geom_col(aes(x=supp,y=media),fill=c("orange","purple"),colour="black")+
+  geom_errorbar(aes(x=supp,ymin=media-desvio,ymax=media+desvio))+
+  theme_bw()+
+  labs(title= "Crescimento dentário de porquinho da índia",x="Tipo de suplemento",y="Crescimento dentário")
+
+ggplot(g)+geom_pointrange(aes(x=supp,ymin=media-desvio,ymax=media+desvio,y=media),colour=c("blue","red"),size=3)+
+  theme_minimal()+
+  labs(title= "Crescimento dentário de porquinho da índia",x="Tipo de suplemento",y="Crescimento dentário")
+```
+
+## Correlação
+
+```{r}
+## dados
+Orange1 <- Orange
+```
+
+```{r}
+#checar dados com gráfico
+plot(Orange1$age, Orange1$circumference)
+```
+```{r}
+## correlação de Pearson
+cor(Orange1$age, Orange1$circumference)
+```
+```{r}
+#Teste estatístico
+cor.test(Orange1$age, Orange1$circumference)
+```
+Outros tipos de correlação
+
+```{r}
+## correlação de pearson
+cor(Orange1$age, Orange1$circumference, method = "pearson")
+```
+```{r}
+## correlaçao de Kendal
+cor(Orange1$age, Orange1$circumference, method = "kendal")
+```
+```{r}
+## correlação de spearman
+cor(Orange1$age, Orange1$circumference, method = "spearman")
+```
+Multiplas variáveis
+
+Matriz de correlação
+
+```{r}
+## dados
+car <- mtcars
+```
+
+```{r}
+## matriz de correlação
+mt <- cor(car)
+view(mt)
+```
+
+```{r, results='hide'}
+if(!require(corrplot)){install.packages("corrplot")};library(corrplot)
+```
+
+```{r}
+## padrão com circulos
+corrplot(mt)
+```
+```{r}
+## cores
+corrplot(mt,method = "color")
+```
+```{r}
+corrplot(mt, method = "ellipse")
+```
+```{r}
+## tons
+corrplot(mt, method = "shade")
+```
+```{r}
+## numeros
+corrplot(mt, method = "number")
+```
+```{r}
+## posição
+corrplot(mt, type = "upper")
+```
+```{r}
+##posicao
+corrplot(mt, type = "lower", method = "number")
+```
+Numeros
+
+Matriz e graficos mais complexos
+
+```{r,results='hide'}
+## pacote
+if(!require(Hmisc)){install.packages("Hmisc")};library(Hmisc)
+```
+
+```{r}
+## coeficinete de correlação, n e valor p
+mt <- rcorr(as.matrix(car))
+mt
+```
+Graficos
+
+```{r}
+corrplot(mt$r,p.mat = mt$P,sig.level = 0.001, method = "number",type = "upper")
+```
+ANOVA - Analise de variancia
+
+Anova - one way / unilateral
+
+```{r}
+## transformando dose em fator
+dente$dose <- factor(dente$dose)
+```
+
+
+```{r}
+## histograma - normalidade
+qplot(x=len,data = dente,bins=10)
+```
+```{r}
+qplot(x=len,fill=dose,data=dente,binwidth=3)
+```
+
+One Way
+```{r}
+a1 <- aov(len ~ dose, data = dente)
+summary(a1)
+```
+```{r}
+## tetse de post hoc
+TukeyHSD(a1)
+```
+```{r}
+## teste T pareado
+pairwise.t.test(dente$len, dente$dose)
+```
+
+Anova - two way / dois fatores
+
+```{r}
+ggplot(dente)+
+  geom_boxplot(aes(x=dose,y=len, fill=supp))+
+  geom_jitter(aes(x=dose,y=len,group=supp))+
+  theme_bw()
+```
+```{r}
+## diferenca entre os grupos
+a2 <- aov(len ~ dose + supp, data = dente)
+summary(a2)
+```
+
+```{r}
+## diferenca e interação
+a3 <- aov(len ~ dose*supp, data = dente)
+summary(a3)
+```
+```{r}
+## somente interaçao
+a4 <- aov(len~dose:supp,data = dente)
+summary(a4)
+```
+Anova desbalanceado
+
+grupo não tem o mesmo numeto de variáveis
+
+```{r}
+library(car)
+```
+
+```{r}
+## diferenca e inteacao
+a3 <- aov(len ~ dose*supp, data = dente)
+Anova(a3,type="III")
+```
+**Regressão Linear Simples**
+
+Regressão é uma equação para se estimat a condicional (valor esperado) de uma variavel y, dados os valores de algumas outras variaveis x. 
+
+$y = a + bx$
+
+```{r}
+## banco de dados
+Orange1
+```
+
+```{r}
+qplot(age, circumference ,data = Orange1)
+```
+```{r}
+cor.test(Orange1$age, Orange1$circumference)
+```
+```{r}
+## regressão
+rl <- lm(circumference ~ age,data = Orange1)
+```
+
+```{r}
+## grafico
+plot(rl)
+```
+
+```{r}
+## results
+summary(rl)
+```
+Rejeição da hipotese nula (variáveis não são relacionadas) valor p < 0.05.
+
+R-square explica o quanto o modelo explica da variação interceocao e inclinacao
+
+Grafico
+
+```{r}
+ggplot(Orange1,aes(x=age,y=circumference))+
+  geom_point(colour="steelblue",size=4)+
+  geom_smooth(method = "lm",colour="black")+
+  labs(title = "Regressão Linear de Orange")+
+  theme_minimal()
+```
+Outras funções
+
+```{r}
+## coeficente do modelo
+coefficients(rl)
+```
+```{r}
+## intervalo de confianca
+confint(rl,level = .95)
+```
+```{r}
+## valores previstos
+fitted(rl)
+```
+```{r}
+## residuais
+residuals(rl)
+```
+
+```{r}
+anova(rl)
+```
+
+
+**Regressão Linear Multipla**
+
+Regressão linear multipla é um equação para se estimar a condicional (valor esperado) de uma variavel y, dados os valores de algumas outras variaveis x.
+
+$y = a + bx_1 + bx_2 + bx_3 + bx_n$
+
+```{r}
+## banco de dados iris
+iris1 <- iris
+```
+
+```{r}
+fit1 <- lm(Sepal.Length~Sepal.Width+Petal.Length,data = iris1)
+```
+```{r}
+## fator de variação
+vif(fit1)
+##ok valores menores q 5
+```
+```{r}
+fit2 <- lm(Sepal.Length~Sepal.Width+Petal.Length+Petal.Width,data = iris1)
+```
+
+```{r}
+vif(fit2)
+##problematico valores maiores q 10/
+```
+```{r}
+fit3 <- lm(Sepal.Length~Sepal.Width*Petal.Length,data = iris1)
+vif(fit3)
+## problematico valores muito altos
+```
