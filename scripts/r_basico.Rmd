@@ -16,58 +16,58 @@ rm(list=ls(all=T))
 Banco de dados
 ```{r}
 ## banco de dados do R base
-iris <- iris
+iris1 <- iris
 
 ## visualizando banco de dados
-View(iris)
+View(iris1)
 
 ## tipo de dados
-str(iris)
+str(iris1)
 
 ## resumo de estatísticas básica dos dados
-summary(iris)
+summary(iris1)
 ```
 
 Acessando elementos do data frame
 ```{r}
 ## elemento da primeira linha segunda coluna
-iris[1,2]
+iris1[1,2]
 
 ## primeira linha todas as colunas
-iris[1,]
+iris1[1,]
 
 ## terceira coluna
-iris[,3]
+iris1[,3]
 
 ## coluna Petal.Length
-iris$Petal.Length
-iris[,"Petal.Length"]
+iris1$Petal.Length
+iris1[,"Petal.Length"]
 ```
 
 Operações matemáticas nas colunas
 ```{r}
 ## média Sepal.Width
-mean(iris$Sepal.Width)
+mean(iris1$Sepal.Width)
 
 ## soma Sepal.Width
-sum(iris$Sepal.Width)
+sum(iris1$Sepal.Width)
 
 ## desvio padrão
-sd(iris$Sepal.Width)
+sd(iris1$Sepal.Width)
 ```
 Aplicando alguns filtros
 ```{r}
 ## especie versicolor
-versicolor <- iris[iris$Species == "versicolor",]
+versicolor <- iris1[iris1$Species == "versicolor",]
 
 ## Petal.Length menor que 2
-menor2 <- iris[iris$Petal.Length < 2,]
+menor2 <- iris1[iris1$Petal.Length < 2,]
 
 ## Petal.Length maior que 2 e menor que 4
-maior2menor4 <- iris[iris$Petal.Length > 2 & iris$Petal.Length < 4,]
+maior2menor4 <- iris1[iris1$Petal.Length > 2 & iris1$Petal.Length < 4,]
 
 ## excluindo coluna Petal.Length 
-irisSemPetal.Length <- iris[,-3]
+irisSemPetal.Length <- iris1[,-3]
 ```
 
 

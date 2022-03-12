@@ -8,17 +8,20 @@ output: html_document
 ## Gráficos Rápidos
 
 Limpando Ambiente Global
+
 ```{r}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
 rm(list=ls(all=T))
 ```
 
 Instalando e Carregando o pacote tidyverse
+
 ```{r results='hide'}
 if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
 ```
 
 Gráfico com uma dimenssão
+
 ```{r}
 ## histograma, por padrão
 qplot(x = Petal.Length, data = iris, bins = 30)
@@ -88,7 +91,7 @@ ggplot(iris, aes(Sepal.Width)) + geom_freqpoly(bins = 30)
 
 ```{r}
 ## graficos de pontos
-ggplot(iris, aes(Sepal.Width)) + geom_dotplot(binwidth = 0.05)
+ggplot(iris, aes(Sepal.Width)) + geom_dotplot(binwidth = 0.03)
 ```
 
 Personalização
@@ -102,7 +105,7 @@ g <- ggplot(iris)
 ## transparencia e contornos
 ## alpha = transparencia
 ## colour = controno
-g+ geom_histogram(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.3, colour = "black")
+g+ geom_histogram(aes(Petal.Length, fill = Species), binwidth = 0.1,  alpha = 0.3, colour = "red")
 ```
 ```{r}
 g+ geom_density(aes(Petal.Length, fill = Species), colour = "black")

@@ -113,7 +113,9 @@ iris1$Species <- gsub("tipo", "especies", iris1$Species)
 Trabalhando com  texto
 
 **Pacote tidyverse**
+
 Instalando e Carregando o pacote tidyverse
+
 ```{r results='hide'}
 if(!require(tidyverse)){install.packages("tidyverse");library(tidyverse)}
 if(!require(tidytext)){install.packages("tidytext");library(tidytext)}
@@ -121,9 +123,27 @@ if(!require(tm)){install.packages("tm");library(tm)}
 ```
 
 Dados
+
 ```{r}
-## carregando texto
-casmurro <- scan("casmurro.txt", what = "character", sep= "\n", encoding = "UTF-8")
+casmurro<-  scan("casmurro.txt", what="character", sep="\n",encoding="UTF-8") # carrega .txt e transforma em vetor
+casmurro<- casmurro[27:6393] # texto em si
+casmurro<- data_frame("linha"= 1:length(casmurro),"texto"=casmurro )
+```
+```{r}
+casmurro_2<- unnest_tokens(casmurro,palavra,texto,token = "ngrams",n=2) # dividir por ngram 2
+View(casmurro_2)
+freq2<-casmurro_2 %>%  count(palavra, sort = TRUE) #frequência de palavras
+View (freq2)
+```
+
+```{r}
+casmurro_3<- unnest_tokens(casmurro,palavra,texto,token = "ngrams",n=3) # dividir por ngram 3
+freq3<-casmurro_3 %>%  count(palavra, sort = TRUE) #frequência de palavras
+View (freq3)
+
+casmurro_4<- unnest_tokens(casmurro,palavra,texto,token = "ngrams",n=4) # dividir por ngram 4
+freq4<-casmurro_4 %>%  count(palavra, sort = TRUE) #frequência de palavras
+View (freq4)
 ```
 
 
